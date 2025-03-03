@@ -9,52 +9,68 @@ local menuOpen = false
 local afkEnabled = true
 
 local startTime = tick()  
+local secondsPassed = 0
+local minutesPassed = 0
+local hoursPassed = 0
+local daysPassed = 0
 
 ba.Parent = game.CoreGui
 ba.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
 ca.Parent = ba
 ca.Active = true
-ca.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+ca.BackgroundColor3 = Color3.new(0, 0, 0)
 ca.Draggable = true
 ca.Position = UDim2.new(0.698610067, 0, 0.098096624, 0)
 ca.Size = UDim2.new(0, 370, 0, 52)
 ca.Font = Enum.Font.SourceSansSemibold
 ca.Text = "Anti AFK"
-ca.TextColor3 = Color3.new(0, 1, 1)
+ca.TextColor3 = Color3.new(1, 1, 1)
 ca.TextSize = 22
 
+local caCorner = Instance.new("UICorner")
+caCorner.Parent = ca
+caCorner.CornerRadius = UDim.new(0, 10)
+
 da.Parent = ca
-da.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+da.BackgroundColor3 = Color3.new(0, 0, 0)
 da.Position = UDim2.new(0, 0, 1.0192306, 0)
 da.Size = UDim2.new(0, 370, 0, 130)
 
+local daCorner = Instance.new("UICorner")
+daCorner.Parent = da
+daCorner.CornerRadius = UDim.new(0, 10)
+
 ab.Parent = da
-ab.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+ab.BackgroundColor3 = Color3.new(0, 0, 0)
 ab.Position = UDim2.new(0, 0, 0.158377, 0)
 ab.Size = UDim2.new(0, 370, 0, 44)
 ab.Font = Enum.Font.ArialBold
 ab.Text = "Status: Active"
-ab.TextColor3 = Color3.new(0, 1, 1)
+ab.TextColor3 = Color3.new(1, 1, 1)
 ab.TextSize = 20
 
 uptimeLabel.Parent = da
-uptimeLabel.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+uptimeLabel.BackgroundColor3 = Color3.new(0, 0, 0)
 uptimeLabel.Position = UDim2.new(0, 0, 0.500, 0)
 uptimeLabel.Size = UDim2.new(0, 370, 0, 21)
 uptimeLabel.Font = Enum.Font.Arial
 uptimeLabel.Text = "Uptime: 0d 0h 0m 0s"
-uptimeLabel.TextColor3 = Color3.new(0, 1, 1)
+uptimeLabel.TextColor3 = Color3.new(1, 1, 1)
 uptimeLabel.TextSize = 20
 
 toggleButton.Parent = da
-toggleButton.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+toggleButton.BackgroundColor3 = Color3.new(0, 0, 0)
 toggleButton.Position = UDim2.new(0, 0, 0.75, 0)
 toggleButton.Size = UDim2.new(0, 370, 0, 30)
 toggleButton.Font = Enum.Font.SourceSans
 toggleButton.Text = "Toggle AFK: ON"
-toggleButton.TextColor3 = Color3.new(0, 1, 1)
+toggleButton.TextColor3 = Color3.new(1, 1, 1)
 toggleButton.TextSize = 20
+
+local toggleButtonCorner = Instance.new("UICorner")
+toggleButtonCorner.Parent = toggleButton
+toggleButtonCorner.CornerRadius = UDim.new(0, 10)
 
 toggleButton.MouseButton1Click:Connect(function()
     afkEnabled = not afkEnabled
@@ -79,12 +95,24 @@ end)
 spawn(function()
     while true do
         wait(1)
-        local elapsed = tick() - startTime
-        local days = math.floor(elapsed / 86400)
-        local hours = math.floor((elapsed % 86400) / 3600)
-        local minutes = math.floor((elapsed % 3600) / 60)
-        local seconds = math.floor(elapsed % 60)
-        uptimeLabel.Text = string.format("Uptime: %dd %dh %dm %ds", days, hours, minutes, seconds)
+        secondsPassed = secondsPassed + 1
+
+        if secondsPassed >= 60 then
+            secondsPassed = 0
+            minutesPassed = minutesPassed + 1
+        end
+
+        if minutesPassed >= 60 then
+            minutesPassed = 0
+            hoursPassed = hoursPassed + 1
+        end
+
+        if hoursPassed >= 24 then
+            hoursPassed = 0
+            daysPassed = daysPassed + 1
+        end
+
+        uptimeLabel.Text = string.format("Uptime: %dd %dh %dm %ds", daysPassed, hoursPassed, minutesPassed, secondsPassed)
     end
 end)
 
@@ -101,10 +129,14 @@ end)
 
 local creditLabel = Instance.new("TextLabel")
 creditLabel.Parent = da
-creditLabel.BackgroundColor3 = Color3.new(0.1, 0.1, 0.1)
+creditLabel.BackgroundColor3 = Color3.new(0, 0, 0)
 creditLabel.Position = UDim2.new(0, 0, 0.9, 0)
 creditLabel.Size = UDim2.new(0, 370, 0, 21)
 creditLabel.Font = Enum.Font.Arial
 creditLabel.Text = "Creator's Discord: happy.z"
-creditLabel.TextColor3 = Color3.new(0, 1, 1)
+creditLabel.TextColor3 = Color3.new(1, 1, 1)
 creditLabel.TextSize = 20
+
+local creditCorner = Instance.new("UICorner")
+creditCorner.Parent = creditLabel
+creditCorner.CornerRadius = UDim.new(0, 10)
