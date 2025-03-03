@@ -7,6 +7,7 @@ local uptimeLabel = Instance.new("TextLabel")
 local toggleButton = Instance.new("TextButton")
 local menuOpen = false
 local afkEnabled = true
+local keybind = Enum.KeyCode.F
 
 local startTime = tick()  
 local secondsPassed = 0
@@ -30,16 +31,24 @@ ca.TextSize = 22
 
 local caCorner = Instance.new("UICorner")
 caCorner.Parent = ca
-caCorner.CornerRadius = UDim.new(0, 10)
+caCorner.CornerRadius = UDim.new(0, 12)
+
+local gradient = Instance.new("UIGradient")
+gradient.Parent = ca
+gradient.Color = ColorSequence.new(
+    Color3.fromRGB(0, 0, 0), 
+    Color3.fromRGB(50, 50, 50)
+)
+gradient.Rotation = 45
 
 da.Parent = ca
 da.BackgroundColor3 = Color3.new(0, 0, 0)
 da.Position = UDim2.new(0, 0, 1.0192306, 0)
-da.Size = UDim2.new(0, 370, 0, 130)
+da.Size = UDim2.new(0, 370, 0, 160)
 
 local daCorner = Instance.new("UICorner")
 daCorner.Parent = da
-daCorner.CornerRadius = UDim.new(0, 10)
+daCorner.CornerRadius = UDim.new(0, 12)
 
 ab.Parent = da
 ab.BackgroundColor3 = Color3.new(0, 0, 0)
@@ -70,7 +79,7 @@ toggleButton.TextSize = 20
 
 local toggleButtonCorner = Instance.new("UICorner")
 toggleButtonCorner.Parent = toggleButton
-toggleButtonCorner.CornerRadius = UDim.new(0, 10)
+toggleButtonCorner.CornerRadius = UDim.new(0, 12)
 
 toggleButton.MouseButton1Click:Connect(function()
     afkEnabled = not afkEnabled
@@ -86,10 +95,35 @@ end)
 local UIS = game:GetService("UserInputService")
 UIS.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
-    if input.KeyCode == Enum.KeyCode.F then
+
+    if input.KeyCode == keybind then
         menuOpen = not menuOpen
         ca.Visible = menuOpen
     end
+end)
+
+function setKeybind(newKey)
+    keybind = newKey
+end
+
+local keybindButton = Instance.new("TextButton")
+keybindButton.Parent = da
+keybindButton.BackgroundColor3 = Color3.new(0, 0, 0)
+keybindButton.Position = UDim2.new(0, 0, 1.0, 0)
+keybindButton.Size = UDim2.new(0, 370, 0, 30)
+keybindButton.Font = Enum.Font.SourceSans
+keybindButton.Text = "Set Keybind"
+keybindButton.TextColor3 = Color3.new(1, 1, 1)
+keybindButton.TextSize = 20
+
+keybindButton.MouseButton1Click:Connect(function()
+    keybindButton.Text = "Press any key to set keybind..."
+    
+    UIS.InputBegan:Connect(function(input, gameProcessed)
+        if gameProcessed then return end
+        keybind = input.KeyCode
+        keybindButton.Text = "Keybind Set to: " .. input.KeyCode.Name
+    end)
 end)
 
 spawn(function()
@@ -130,7 +164,7 @@ end)
 local creditLabel = Instance.new("TextLabel")
 creditLabel.Parent = da
 creditLabel.BackgroundColor3 = Color3.new(0, 0, 0)
-creditLabel.Position = UDim2.new(0, 0, 0.9, 0)
+creditLabel.Position = UDim2.new(0, 0, 1.1, 0)
 creditLabel.Size = UDim2.new(0, 370, 0, 21)
 creditLabel.Font = Enum.Font.Arial
 creditLabel.Text = "Creator's Discord: happy.z"
