@@ -8,7 +8,7 @@ local toggleButton = Instance.new("TextButton")
 local menuOpen = false
 local afkEnabled = true
 local keybind = Enum.KeyCode.F
-local settingKeybind = false  -- ตัวแปรใหม่ที่ใช้เพื่อเช็คว่ากำลังตั้งค่าปุ่มหรือไม่
+local settingKeybind = false
 
 local startTime = tick()  
 local secondsPassed = 0
@@ -26,7 +26,7 @@ ca.Draggable = true
 ca.Position = UDim2.new(0.698610067, 0, 0.098096624, 0)
 ca.Size = UDim2.new(0, 370, 0, 52)
 ca.Font = Enum.Font.SourceSansSemibold
-ca.Text = "Anti AFK"
+ca.Text = "Always Online but AFK"
 ca.TextColor3 = Color3.new(1, 1, 1)
 ca.TextSize = 22
 
@@ -44,7 +44,7 @@ gradient.Rotation = 45
 
 da.Parent = ca
 da.BackgroundColor3 = Color3.new(0, 0, 0)
-da.Position = UDim2.new(0, 0, 1.1, 0)
+da.Position = UDim2.new(0, 0, 1.05, 0)
 da.Size = UDim2.new(0, 370, 0, 160)
 
 local daCorner = Instance.new("UICorner")
@@ -62,7 +62,7 @@ ab.TextSize = 20
 
 uptimeLabel.Parent = da
 uptimeLabel.BackgroundColor3 = Color3.new(0, 0, 0)
-uptimeLabel.Position = UDim2.new(0, 0, 0.5, 0)
+uptimeLabel.Position = UDim2.new(0, 0, 0.45, 0)
 uptimeLabel.Size = UDim2.new(0, 370, 0, 21)
 uptimeLabel.Font = Enum.Font.Arial
 uptimeLabel.Text = "Uptime: 0d 0h 0m 0s"
@@ -97,12 +97,11 @@ local UIS = game:GetService("UserInputService")
 UIS.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
 
-    -- ตรวจสอบว่ากำลังตั้งค่าปุ่มหรือไม่
     if settingKeybind then
         keybind = input.KeyCode
         keybindButton.Text = "Keybind Set to: " .. input.KeyCode.Name
-        settingKeybind = false  -- รีเซ็ตสถานะการตั้งค่า
-        return  -- หยุดการทำงานของปุ่มเปิด/ปิดเมนู
+        settingKeybind = false
+        return
     end
 
     if input.KeyCode == keybind then
@@ -126,7 +125,7 @@ keybindButton.TextColor3 = Color3.new(1, 1, 1)
 keybindButton.TextSize = 20
 
 keybindButton.MouseButton1Click:Connect(function()
-    settingKeybind = true  -- ตั้งค่าให้สามารถกดเพื่อกำหนดปุ่มใหม่
+    settingKeybind = true
     keybindButton.Text = "Press any key to set keybind..."
 end)
 
