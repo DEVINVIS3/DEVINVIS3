@@ -1,12 +1,13 @@
 wait(0.5)
+
 local ba = Instance.new("ScreenGui")
-local ca = Instance.new("TextLabel")
-local da = Instance.new("Frame")
-local ab = Instance.new("TextLabel")
+local ca = Instance.new("Frame")
+local ab = Instance.new("TextLabel")  -- สถานะ AFK (Active/Inactive)
 local uptimeLabel = Instance.new("TextLabel")
 local toggleButton = Instance.new("TextButton")
-local menuOpen = false
-local afkEnabled = true
+local keybindButton = Instance.new("TextButton")
+local minimizeButton = Instance.new("TextButton")  -- ปุ่มย่อ
+local afkEnabled = true  -- กำหนดค่าเริ่มต้นให้ AFK ทำงาน
 local keybind = Enum.KeyCode.F
 local settingKeybind = false
 
@@ -19,84 +20,144 @@ local daysPassed = 0
 ba.Parent = game.CoreGui
 ba.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
+-- Main Frame สำหรับ UI ทั้งหมด
 ca.Parent = ba
 ca.Active = true
+ca.Draggable = true  -- เลื่อน UI ทั้งหมดได้
 ca.BackgroundColor3 = Color3.new(0, 0, 0)
-ca.Draggable = true
 ca.Position = UDim2.new(0.698610067, 0, 0.098096624, 0)
-ca.Size = UDim2.new(0, 370, 0, 52)
-ca.Font = Enum.Font.SourceSansSemibold
-ca.Text = "Always Online but AFK"
-ca.TextColor3 = Color3.new(1, 1, 1)
-ca.TextSize = 22
+ca.Size = UDim2.new(0, 250, 0, 200)  -- ปรับขนาดให้เล็กลง
 
+-- เพิ่มมุมโค้งให้กับ ca (Frame หลัก)
 local caCorner = Instance.new("UICorner")
 caCorner.Parent = ca
-caCorner.CornerRadius = UDim.new(0, 12)
+caCorner.CornerRadius = UDim.new(0, 12)  -- กำหนดมุมโค้งที่ขอบทั้งหมด
 
-local gradient = Instance.new("UIGradient")
-gradient.Parent = ca
-gradient.Color = ColorSequence.new(
-    Color3.fromRGB(0, 0, 0), 
-    Color3.fromRGB(50, 50, 50)
-)
-gradient.Rotation = 45
-
-da.Parent = ca
-da.BackgroundColor3 = Color3.new(0, 0, 0)
-da.Position = UDim2.new(0, 0, 1.1, 0)
-da.Size = UDim2.new(0, 370, 0, 200)
-
-local daCorner = Instance.new("UICorner")
-daCorner.Parent = da
-daCorner.CornerRadius = UDim.new(0, 12)
-
-ab.Parent = da
+-- Status text (Active/Inactive)
+ab.Parent = ca
 ab.BackgroundColor3 = Color3.new(0, 0, 0)
-ab.Position = UDim2.new(0, 0, 0.158377, 0)
-ab.Size = UDim2.new(0, 370, 0, 44)
+ab.Position = UDim2.new(0, 0, 0, 0)
+ab.Size = UDim2.new(0, 250, 0, 30)
 ab.Font = Enum.Font.ArialBold
 ab.Text = "Status: Active"
 ab.TextColor3 = Color3.new(1, 1, 1)
-ab.TextSize = 20
+ab.TextSize = 16
 
-uptimeLabel.Parent = da
+-- เพิ่มมุมโค้งให้กับ Status Text
+local abCorner = Instance.new("UICorner")
+abCorner.Parent = ab
+abCorner.CornerRadius = UDim.new(0, 8)  -- กำหนดมุมโค้งที่ข้อความ Status
+
+-- Uptime label
+uptimeLabel.Parent = ca
 uptimeLabel.BackgroundColor3 = Color3.new(0, 0, 0)
-uptimeLabel.Position = UDim2.new(0, 0, 0.500, 0)
-uptimeLabel.Size = UDim2.new(0, 370, 0, 21)
+uptimeLabel.Position = UDim2.new(0, 0, 0.2, 0)
+uptimeLabel.Size = UDim2.new(0, 250, 0, 20)
 uptimeLabel.Font = Enum.Font.Arial
 uptimeLabel.Text = "Uptime: 0d 0h 0m 0s"
 uptimeLabel.TextColor3 = Color3.new(1, 1, 1)
-uptimeLabel.TextSize = 20
+uptimeLabel.TextSize = 16
 
-toggleButton.Parent = da
+-- เพิ่มกรอบสำหรับสถานะ AFK
+local statusFrame = Instance.new("Frame")
+statusFrame.Parent = uptimeLabel
+statusFrame.Size = UDim2.new(0, 20, 0, 20)  -- กำหนดขนาดของกรอบ
+statusFrame.Position = UDim2.new(0, 5, 0, 0)  -- อยู่ที่มุมซ้ายของ uptimeLabel
+statusFrame.BackgroundColor3 = Color3.new(0, 0, 0)  -- สีพื้นหลังกรอบ
+statusFrame.BorderSizePixel = 0  -- ไม่มีขอบกรอบ
+
+-- เพิ่มมุมโค้งให้กับกรอบ
+local statusFrameCorner = Instance.new("UICorner")
+statusFrameCorner.Parent = statusFrame
+statusFrameCorner.CornerRadius = UDim.new(0, 10)  -- มุมโค้งที่กรอบ
+
+-- จุดสีเขียว/แดงภายในกรอบ
+local statusIndicator = Instance.new("Frame")
+statusIndicator.Parent = statusFrame
+statusIndicator.Size = UDim2.new(0, 10, 0, 10)  -- ขนาดจุด
+statusIndicator.Position = UDim2.new(0.5, -5, 0.5, -5)  -- วางตำแหน่งตรงกลางกรอบ
+statusIndicator.BackgroundColor3 = Color3.new(0, 1, 0)  -- สีเขียวเริ่มต้น
+
+local statusCorner = Instance.new("UICorner")
+statusCorner.Parent = statusIndicator
+statusCorner.CornerRadius = UDim.new(0, 5)
+
+-- Toggle AFK button
+toggleButton.Parent = ca
 toggleButton.BackgroundColor3 = Color3.new(0, 0, 0)
-toggleButton.Position = UDim2.new(0, 0, 0.75, 0)
-toggleButton.Size = UDim2.new(0, 370, 0, 30)
+toggleButton.Position = UDim2.new(0, 0, 0.4, 0)
+toggleButton.Size = UDim2.new(0, 250, 0, 25)
 toggleButton.Font = Enum.Font.SourceSans
 toggleButton.Text = "Toggle AFK: ON"
 toggleButton.TextColor3 = Color3.new(1, 1, 1)
-toggleButton.TextSize = 20
+toggleButton.TextSize = 16
 
+-- เพิ่มมุมโค้งให้กับปุ่ม Toggle AFK
 local toggleButtonCorner = Instance.new("UICorner")
 toggleButtonCorner.Parent = toggleButton
-toggleButtonCorner.CornerRadius = UDim.new(0, 12)
+toggleButtonCorner.CornerRadius = UDim.new(0, 8)
 
+-- Keybind button (สำหรับเปิด/ปิดเมนู)
+keybindButton.Parent = ca
+keybindButton.BackgroundColor3 = Color3.new(0, 0, 0)
+keybindButton.Position = UDim2.new(0, 0, 0.6, 0)
+keybindButton.Size = UDim2.new(0, 250, 0, 25)
+keybindButton.Font = Enum.Font.SourceSans
+keybindButton.Text = "Set Keybind"
+keybindButton.TextColor3 = Color3.new(1, 1, 1)
+keybindButton.TextSize = 16
+
+-- เพิ่มมุมโค้งให้กับปุ่ม Set Keybind
+local keybindButtonCorner = Instance.new("UICorner")
+keybindButtonCorner.Parent = keybindButton
+keybindButtonCorner.CornerRadius = UDim.new(0, 8)
+
+-- เพิ่มปุ่มย่อ
+minimizeButton.Parent = ca
+minimizeButton.BackgroundColor3 = Color3.new(0, 0, 0)
+minimizeButton.Position = UDim2.new(1, -30, 0, 0)  -- ปุ่มย่ออยู่มุมขวาบน
+minimizeButton.Size = UDim2.new(0, 30, 0, 30)
+minimizeButton.Text = "-"
+minimizeButton.TextColor3 = Color3.new(1, 1, 1)
+minimizeButton.Font = Enum.Font.SourceSans
+minimizeButton.TextSize = 24
+
+minimizeButton.MouseButton1Click:Connect(function()
+    -- เปลี่ยนขนาดของ UI เมื่อกดปุ่มย่อ
+    if ca.Size == UDim2.new(0, 250, 0, 200) then
+        ca.Size = UDim2.new(0, 250, 0, 50)  -- ย่อให้แสดงแค่สถานะและเวลา
+        toggleButton.Visible = false  -- ซ่อนปุ่ม Toggle AFK
+        keybindButton.Visible = false  -- ซ่อนปุ่ม Set Keybind
+    else
+        ca.Size = UDim2.new(0, 250, 0, 200)  -- ขยายกลับ
+        toggleButton.Visible = true  -- แสดงปุ่ม Toggle AFK
+        keybindButton.Visible = true  -- แสดงปุ่ม Set Keybind
+    end
+end)
+
+-- ฟังก์ชันสำหรับเปิด/ปิด AFK
 toggleButton.MouseButton1Click:Connect(function()
     afkEnabled = not afkEnabled
     if afkEnabled then
         toggleButton.Text = "Toggle AFK: ON"
-        ab.Text = "Status: Active"
+        ab.Text = "Status: Active"  -- เปลี่ยนสถานะ
     else
         toggleButton.Text = "Toggle AFK: OFF"
-        ab.Text = "Status: Inactive"
+        ab.Text = "Status: Inactive"  -- เปลี่ยนสถานะ
     end
+end)
+
+-- Keybind button (สำหรับเปิด/ปิดเมนู)
+keybindButton.MouseButton1Click:Connect(function()
+    settingKeybind = true
+    keybindButton.Text = "Press any key to set keybind..."
 end)
 
 local UIS = game:GetService("UserInputService")
 UIS.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
 
+    -- การตั้งค่าคีย์บอร์ด
     if settingKeybind then
         keybind = input.KeyCode
         keybindButton.Text = "Keybind Set to: " .. input.KeyCode.Name
@@ -104,31 +165,13 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
         return
     end
 
+    -- การเปิด/ปิดเมนู UI ด้วยคีย์บอร์ด
     if input.KeyCode == keybind then
-        menuOpen = not menuOpen
-        ca.Visible = menuOpen
+        ca.Visible = not ca.Visible
     end
 end)
 
-function setKeybind(newKey)
-    keybind = newKey
-end
-
-local keybindButton = Instance.new("TextButton")
-keybindButton.Parent = da
-keybindButton.BackgroundColor3 = Color3.new(0, 0, 0)
-keybindButton.Position = UDim2.new(0, 0, 0.95, 0)
-keybindButton.Size = UDim2.new(0, 370, 0, 30)
-keybindButton.Font = Enum.Font.SourceSans
-keybindButton.Text = "Set Keybind"
-keybindButton.TextColor3 = Color3.new(1, 1, 1)
-keybindButton.TextSize = 20
-
-keybindButton.MouseButton1Click:Connect(function()
-    settingKeybind = true
-    keybindButton.Text = "Press any key to set keybind..."
-end)
-
+-- ฟังก์ชันสำหรับการอัพเดต uptime
 spawn(function()
     while true do
         wait(1)
@@ -153,6 +196,7 @@ spawn(function()
     end
 end)
 
+-- ป้องกันการ idle kick โดยใช้ VirtualUser
 local bb = game:service'VirtualUser'
 game:service'Players'.LocalPlayer.Idled:connect(function()
     if afkEnabled then
@@ -164,16 +208,30 @@ game:service'Players'.LocalPlayer.Idled:connect(function()
     end
 end)
 
+-- Credit label
 local creditLabel = Instance.new("TextLabel")
-creditLabel.Parent = da
+creditLabel.Parent = ca
 creditLabel.BackgroundColor3 = Color3.new(0, 0, 0)
-creditLabel.Position = UDim2.new(0, 0, 1.15, 0)
-creditLabel.Size = UDim2.new(0, 370, 0, 21)
+creditLabel.Position = UDim2.new(0, 0, 0.8, 0)
+creditLabel.Size = UDim2.new(0, 250, 0, 20)
 creditLabel.Font = Enum.Font.Arial
 creditLabel.Text = "Creator's Discord: happy.z"
 creditLabel.TextColor3 = Color3.new(1, 1, 1)
-creditLabel.TextSize = 20
+creditLabel.TextSize = 14
 
+-- เพิ่มมุมโค้งให้กับ Credit Text
 local creditCorner = Instance.new("UICorner")
 creditCorner.Parent = creditLabel
-creditCorner.CornerRadius = UDim.new(0, 10)
+creditCorner.CornerRadius = UDim.new(0, 8)
+
+-- อัปเดตสีของจุดสีเขียว/แดงภายในกรอบ
+spawn(function()
+    while true do
+        wait(1)
+        if afkEnabled then
+            statusIndicator.BackgroundColor3 = Color3.new(0, 1, 0)  -- เขียว
+        else
+            statusIndicator.BackgroundColor3 = Color3.new(1, 0, 0)  -- แดง
+        end
+    end
+end)
